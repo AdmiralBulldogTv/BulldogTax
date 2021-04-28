@@ -10,12 +10,10 @@ COPY go.mod .
 COPY go.sum .
 
 RUN go mod download
-RUN go get -u github.com/gobuffalo/packr/v2/packr2
 
 COPY . .
 
 # Build the Go app
-RUN packr2
 RUN go build
 
 # Start fresh from a smaller image
