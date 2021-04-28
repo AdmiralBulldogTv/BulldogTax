@@ -225,7 +225,7 @@ func CreateWebhook(ctx context.Context, streamerID string) (string, string, erro
 		return "", "", err
 	}
 	respData := &TwitchWebhookRequestResp{}
-	if err = json.Unmarshal(data, respDataRaw); err != nil {
+	if err = json.Unmarshal(respDataRaw, respData); err != nil {
 		return "", "", err
 	}
 

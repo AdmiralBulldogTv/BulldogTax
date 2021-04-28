@@ -1,9 +1,17 @@
 level: "info"
 
-redis_uri: ""
+redis_uri: "redis://127.0.0.1:6379/1"
+mongo_uri: "mongodb://127.0.0.1:27017"
+mongo_db: "bulldog-tax"
 
-mongo_uri: ""
+twitch_client_id: ""
+twitch_client_secret: ""
+twitch_redirect_uri: "https://test.local:5005/callback"
 
-mongo_db: ""
+jwt_secret: ""
+cookie_secure: true
+cookie_domain: "test.local"
+website_url: "https://test.local:5005"
+address: "127.0.0.1:5005"
 
 exit_code: 0

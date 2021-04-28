@@ -64,7 +64,7 @@ type twitchCSRFPayload struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func Twitch(app fiber.Router) fiber.Router {
+func Twitch(app fiber.Router) {
 	app.Get("/login", func(c *fiber.Ctx) error {
 		csrfToken, err := utils.GenerateRandomString(64)
 		if err != nil {
@@ -277,7 +277,11 @@ func Twitch(app fiber.Router) fiber.Router {
 		h := hmac.New(sha256.New, utils.S2B(wh.Secret))
 
 		// Write Data to it
-		h.Write(utils.S2B(hmacMessage))
+		_, err = h.Write(utils.S2B(hmacMessage))
+		if err != nil {
+			log.Errorf("hmac, err=%v", err)
+			return c.SendStatus(500)
+		}
 
 		// Get result and encode as hexadecimal string
 		sha := hex.EncodeToString(h.Sum(nil))
@@ -336,7 +340,7 @@ func Twitch(app fiber.Router) fiber.Router {
 			RewardName: reward["title"].(string),
 			UserID:     callback.Event["user_id"].(string),
 			UserName:   callback.Event["user_name"].(string),
-			Cost:       int32(reward["cost"].(int64)),
+			Cost:       int32(reward["cost"].(float64)),
 			RedeemedAt: redeemedAt,
 		})
 		if err != nil {
@@ -346,6 +350,4 @@ func Twitch(app fiber.Router) fiber.Router {
 
 		return cleanUp(200, "")
 	})
-
-	return app
 }

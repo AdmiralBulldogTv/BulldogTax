@@ -1,7 +1,6 @@
 package server
 
 import (
-	"crypto/tls"
 	"net"
 	"time"
 
@@ -27,13 +26,7 @@ type Server struct {
 }
 
 func New() *Server {
-	cer, err := tls.LoadX509KeyPair("../server.crt", "../server.key")
-	if err != nil {
-		panic(err)
-	}
-
-	config := &tls.Config{Certificates: []tls.Certificate{cer}}
-	ln, err := tls.Listen("tcp", configure.Config.GetString("address"), config)
+	ln, err := net.Listen("tcp", configure.Config.GetString("address")) //tls.Listen("tcp", configure.Config.GetString("address"), config)
 	if err != nil {
 		panic(err)
 	}
@@ -51,6 +44,7 @@ func New() *Server {
 		Output: &customLogger{},
 	}))
 
+	API(server.app)
 	Twitch(server.app)
 
 	server.app.Use(func(c *fiber.Ctx) error {
