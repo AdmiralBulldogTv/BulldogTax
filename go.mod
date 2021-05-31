@@ -6,7 +6,7 @@ require (
 	github.com/antonfisher/nested-logrus-formatter v1.3.1
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/go-redis/redis/v8 v8.8.0
+	github.com/go-redis/redis/v8 v8.9.0
 	github.com/gofiber/fiber/v2 v2.10.0
 	github.com/json-iterator/go v1.1.11
 	github.com/kr/pretty v0.2.1
