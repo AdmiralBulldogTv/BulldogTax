@@ -209,6 +209,7 @@ func Twitch(gCtx global.Context, app fiber.Router) {
 		}
 		if err != nil {
 			if err == mongo.ErrNoDocuments {
+				logrus.Warn("unknown webhook")
 				return c.SendStatus(404)
 			}
 			logrus.Errorf("mongo, err=%v", err)
@@ -217,12 +218,14 @@ func Twitch(gCtx global.Context, app fiber.Router) {
 
 		t, err := time.Parse(time.RFC3339, c.Get("Twitch-Eventsub-Message-Timestamp"))
 		if err != nil || t.Before(time.Now().Add(-10*time.Minute)) {
+			logrus.Warn("webhook too old")
 			return c.SendStatus(400)
 		}
 
 		msgID := c.Get("Twitch-Eventsub-Message-Id")
 
 		if msgID == "" {
+			logrus.Warn("bad webhook id")
 			return c.SendStatus(400)
 		}
 
@@ -243,6 +246,7 @@ func Twitch(gCtx global.Context, app fiber.Router) {
 		sha := hex.EncodeToString(h.Sum(nil))
 
 		if c.Get("Twitch-Eventsub-Message-Signature") != fmt.Sprintf("sha256=%s", sha) {
+			logrus.Warn("bad webhook sha")
 			return c.SendStatus(403)
 		}
 
@@ -270,15 +274,18 @@ func Twitch(gCtx global.Context, app fiber.Router) {
 		}
 
 		callback := WebhookCallback{}
-		if err := json.Unmarshal(body, callback); err != nil {
+		if err := json.Unmarshal(body, &callback); err != nil {
+			logrus.Errorf("bad webhook: %s - %s", body, err.Error())
 			return cleanUp(400, "")
 		}
 
 		if callback.Subscription.Status == "authorization_revoked" {
+			logrus.Warn("revoked webhook")
 			return cleanUp(200, "")
 		}
 
 		if callback.Challenge != "" {
+			logrus.Warn("activated webhook")
 			return cleanUp(200, callback.Challenge)
 		}
 
