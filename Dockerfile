@@ -1,32 +1,23 @@
-FROM golang:1.16.3-alpine3.13 AS build_base
+FROM golang:1.17.6 as builder
 
-RUN apk add --no-cache git
-
-# Set the Current Working Directory inside the container
-WORKDIR /tmp/app
-
-# We want to populate the module cache based on the go.{mod,sum} files.
-COPY go.mod .
-COPY go.sum .
-
-RUN go mod download
+WORKDIR /tmp/taxes
 
 COPY . .
 
-# Build the Go app
-RUN go build
+ARG BUILDER
+ARG VERSION
 
-# Start fresh from a smaller image
-FROM alpine:3.9 
-RUN apk add ca-certificates
+ENV TAXES_BUILDER=${BUILDER}
+ENV TAXES_VERSION=${VERSION}
+
+RUN apt-get update && apt-get install make git gcc -y && \
+    make build_deps && \
+    make
+
+FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=build_base /tmp/app/bulldog-taxes /app/bulldog-taxes
-COPY config.yaml /app/config.yaml
+COPY --from=builder /tmp/taxes/bin/taxes .
 
-# This container exposes port 8080 to the outside world
-EXPOSE 8080
-
-# Run the binary program produced by `go install`
-CMD ["/app/bulldog-taxes"]
+CMD ["/app/taxes"]

@@ -2,16 +2,14 @@
 *.gif
 *.webp
 *.avif
-bin/
+# bin/
 tmp/
 *.yaml
-!config.example.yaml
+!example.config.yaml
 !docker-compose.yaml
 !.github/**/*.yaml
-!design.png
-packrd/
-*-packr.go
+Dockerfile
 *-gqlgen.go
-*_gen.go
+*-packr.go
+_gen.go
 node_modules/
-*.pb.go

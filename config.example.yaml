@@ -1,0 +1,26 @@
+level: info
+
+redis:
+  username: default
+  master_name: mymaster
+  addresses:
+    - redis.redis.svc.cluster.local:26379
+  database: 0
+  sentinel: true
+
+mongo:
+  database: viders
+
+twitch:
+  client_id:
+  client_secret:
+  redirect_uri:
+  webhook_secret:
+
+frontend:
+  cookie_secure:
+  cookie_domain:
+  website_url:
+
+api:
+  bind:

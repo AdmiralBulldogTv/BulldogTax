@@ -3,13 +3,15 @@ package server
 import (
 	"time"
 
+	"github.com/AdmiralBulldogTv/BulldogTax/src/global"
+	"github.com/AdmiralBulldogTv/BulldogTax/src/mongo"
+	"github.com/AdmiralBulldogTv/BulldogTax/src/structures"
 	"github.com/gofiber/fiber/v2"
-	log "github.com/sirupsen/logrus"
-	"github.com/troydota/bulldog-taxes/mongo"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func API(app fiber.Router) {
+func API(gCtx global.Context, app fiber.Router) {
 	app.Get("/tax-results", func(c *fiber.Ctx) error {
 		rewardID := c.Query("reward_id")
 		start := c.Query("start_date")
@@ -20,16 +22,16 @@ func API(app fiber.Router) {
 
 		startDate, err := time.Parse(time.RFC3339, start)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 			return c.SendStatus(400)
 		}
 		endDate, err := time.Parse(time.RFC3339, end)
 		if err != nil {
-			log.Error(err)
+			logrus.Error(err)
 			return c.SendStatus(400)
 		}
 
-		cur, err := mongo.Database.Collection("redeem_events").Find(c.Context(), bson.M{
+		cur, err := gCtx.Inst().Mongo.Collection(mongo.CollectionNameRedeemRewards).Find(c.Context(), bson.M{
 			"reward_id": rewardID,
 			"redeemed_at": bson.M{
 				"$gte": startDate,
@@ -37,18 +39,18 @@ func API(app fiber.Router) {
 			},
 		})
 
-		results := []mongo.RedeemEvent{}
+		results := []structures.RedeemEvent{}
 		if err == nil {
 			err = cur.All(c.Context(), &results)
 		}
 		if err != nil {
-			log.Errorf("mongo, err=%v", err)
+			logrus.Errorf("mongo, err=%v", err)
 			return err
 		}
 
 		data, err := json.Marshal(results)
 		if err != nil {
-			log.Errorf("json, err=%v", err)
+			logrus.Errorf("json, err=%v", err)
 			return err
 		}
 
