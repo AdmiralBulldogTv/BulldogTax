@@ -121,11 +121,13 @@ func Twitch(gCtx global.Context, app fiber.Router) {
 		api.SetUserAccessToken(tknResp.Data.AccessToken)
 
 		users, err := api.GetUsers(&helix.UsersParams{})
-		if err != nil {
+		if err != nil || users.Error != "" || len(users.Data.Users) != 1 {
+			err = fmt.Errorf("%s %s %d", users.Error, users.ErrorMessage, users.ErrorStatus)
 			logrus.Errorf("twitch, err=%e", err)
 			return c.Status(400).JSON(&fiber.Map{
 				"status":  400,
 				"message": "Invalid response from twitch, failed to convert code to access token.",
+				"error":   err.Error(),
 			})
 		}
 
