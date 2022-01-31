@@ -168,6 +168,7 @@ func Twitch(gCtx global.Context, app fiber.Router) {
 			Transport: helix.EventSubTransport{
 				Method:   "webhook",
 				Callback: fmt.Sprintf("%s/webhook/%s", gCtx.Config().Frontend.WebsiteURL, user.ID),
+				Secret:   gCtx.Config().Twitch.WebhookSecret,
 			},
 		})
 		if err != nil || resp.Error != "" || len(resp.Data.EventSubSubscriptions) == 0 {
