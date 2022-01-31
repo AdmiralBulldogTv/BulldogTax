@@ -122,7 +122,9 @@ func Twitch(gCtx global.Context, app fiber.Router) {
 
 		users, err := api.GetUsers(&helix.UsersParams{})
 		if err != nil || users.Error != "" || len(users.Data.Users) != 1 {
-			err = fmt.Errorf("%s %s %d", users.Error, users.ErrorMessage, users.ErrorStatus)
+			if err == nil {
+				err = fmt.Errorf("%s %s %d", users.Error, users.ErrorMessage, users.ErrorStatus)
+			}
 			logrus.Errorf("twitch, err=%e", err)
 			return c.Status(400).JSON(&fiber.Map{
 				"status":  400,
@@ -155,6 +157,8 @@ func Twitch(gCtx global.Context, app fiber.Router) {
 			}
 		}
 
+		api.SetUserAccessToken("")
+
 		resp, err := api.CreateEventSubSubscription(&helix.EventSubSubscription{
 			Type:    "channel.channel_points_custom_reward_redemption.add",
 			Version: "1",
@@ -166,9 +170,16 @@ func Twitch(gCtx global.Context, app fiber.Router) {
 				Callback: fmt.Sprintf("%s/webhook/%s", gCtx.Config().Frontend.WebsiteURL, user.ID),
 			},
 		})
-		if err != nil {
+		if err != nil || resp.Error != "" || len(resp.Data.EventSubSubscriptions) == 0 {
+			if err == nil {
+				err = fmt.Errorf("%s %s %d", resp.Error, resp.ErrorMessage, resp.ErrorStatus)
+			}
 			logrus.Errorf("api, err=%v", err)
-			return err
+			return c.Status(400).JSON(&fiber.Map{
+				"status":  400,
+				"message": "Invalid response from twitch, failed to create webhooks.",
+				"error":   err.Error(),
+			})
 		}
 
 		_, err = gCtx.Inst().Mongo.Collection(mongo.CollectionNameWebhooks).InsertOne(c.Context(), structures.WebHook{
