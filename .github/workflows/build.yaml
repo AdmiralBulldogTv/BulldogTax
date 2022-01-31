@@ -1,4 +1,4 @@
-name: Build Muxer
+name: Build BulldogTax
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build Muxer
+    name: Build BulldogTax
     runs-on: self-hosted
 
     steps:
@@ -73,4 +73,4 @@ jobs:
           (echo $KUBE_CONFIG_DATA | base64 -d) >> ~/.kube/config
           kubectl config use-context autodeploy@Troy
 
-          kubectl patch -n $KUBE_NAMESPACE $KUBE_RESOURCE muxer --type="json" -p="$KUBE_IMAGE_PATCH"
+          kubectl patch -n $KUBE_NAMESPACE $KUBE_RESOURCE bulldog-tax --type="json" -p="$KUBE_IMAGE_PATCH"
