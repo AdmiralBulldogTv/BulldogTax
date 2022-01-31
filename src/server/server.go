@@ -26,8 +26,9 @@ func New(gCtx global.Context) <-chan struct{} {
 
 			return c.SendStatus(500)
 		},
-		ReadTimeout:  time.Second * 10,
-		WriteTimeout: time.Second * 10,
+		ReadTimeout:           time.Second * 10,
+		WriteTimeout:          time.Second * 10,
+		DisableStartupMessage: true,
 	})
 
 	app.Use(recover.New())

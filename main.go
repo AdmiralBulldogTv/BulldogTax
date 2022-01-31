@@ -50,7 +50,7 @@ func main() {
 	}
 
 	if !config.NoHeader {
-		logrus.Info("Viders Muxer")
+		logrus.Info("BulldogTax")
 		logrus.Infof("Version: %s", Version)
 		logrus.Infof("build.Time: %s", Time)
 		logrus.Infof("build.User: %s", User)
