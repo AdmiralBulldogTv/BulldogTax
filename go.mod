@@ -6,7 +6,7 @@ require (
 	github.com/bugsnag/panicwrap v1.3.4
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-redis/redis/v8 v8.11.4
-	github.com/gofiber/fiber/v2 v2.25.0
+	github.com/gofiber/fiber/v2 v2.28.0
 	github.com/json-iterator/go v1.1.12
 	github.com/nicklaw5/helix v1.25.0
 	github.com/sirupsen/logrus v1.8.1
